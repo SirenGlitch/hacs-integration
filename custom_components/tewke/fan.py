@@ -50,7 +50,7 @@ class TewkeSceneFan(TewkeEntity, FanEntity):
     not return scene brightness.
     """
 
-    _attr_supported_features = FanEntityFeature.SET_PERCENTAGE
+    _attr_supported_features = FanEntityFeature.SET_SPEED | FanEntityFeature.TURN_ON | FanEntityFeature.TURN_OFF
 
     def __init__(self, coordinator: TewkeCoordinator, scene: Scene) -> None:
         """Initialise the scene fan."""
