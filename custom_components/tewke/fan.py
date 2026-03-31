@@ -46,8 +46,8 @@ class TewkeSceneFan(TewkeEntity, FanEntity):
     """A Tewke scene exposed as a fan.
 
     Fan speed percentage (0-100) maps directly to Tewke brightness (0-100).
-    The last commanded percentage is stored locally because the Tewke API does
-    not return scene brightness.
+    Speed is read from the scene state reported by the Tap so that remote
+    activations and device-defined defaults are always reflected correctly.
     """
 
     _attr_supported_features = FanEntityFeature.SET_SPEED | FanEntityFeature.TURN_ON | FanEntityFeature.TURN_OFF
@@ -59,7 +59,6 @@ class TewkeSceneFan(TewkeEntity, FanEntity):
         self._attr_name = scene.name
         entry = coordinator.config_entry
         self._attr_unique_id = f"{entry.unique_id or entry.entry_id}_{scene.id}"
-        self._percentage: int = 100
 
     @property
     def is_on(self) -> bool | None:
@@ -68,9 +67,10 @@ class TewkeSceneFan(TewkeEntity, FanEntity):
         return scene.is_active if scene is not None else None
 
     @property
-    def percentage(self) -> int:
-        """Return the last commanded fan speed percentage (0-100)."""
-        return self._percentage
+    def percentage(self) -> int | None:
+        """Return the current fan speed percentage (0-100) as reported by the Tap."""
+        scene = self.coordinator.data["scenes"].get(self._scene_id)
+        return scene.brightness if scene is not None else None
 
     async def async_set_percentage(self, percentage: int) -> None:
         """Set fan speed. A percentage of 0 turns the fan off."""
@@ -87,7 +87,6 @@ class TewkeSceneFan(TewkeEntity, FanEntity):
                 "Error setting speed for Tewke fan scene %s", self._scene_id
             )
             return
-        self._percentage = percentage
         if tap.wall_dock and self._scene_id in tap.wall_dock.scenes:
             self.coordinator.async_set_updated_data(
                 {

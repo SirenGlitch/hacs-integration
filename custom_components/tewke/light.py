@@ -3,8 +3,9 @@
 Two kinds of light entity are registered here:
 
 * ``TewkeSceneLight`` — one entity per scene whose control type is ``"light"``.
-  Brightness is write-only on the Tewke API (scenes don't report it back), so
-  the last commanded brightness is tracked locally using optimistic state.
+  Brightness is read from the scene state reported by the Tap (via observe or
+  initial discovery), so remote activations and device-defined defaults are
+  always reflected correctly.
 
 * ``TewkeTargetLight`` — one entity per physical output (target). Target state
   and brightness are reported by the Tap and updated on every push notification.
@@ -66,8 +67,9 @@ async def async_setup_entry(
 class TewkeSceneLight(TewkeEntity, LightEntity):
     """A Tewke scene exposed as a dimmable light.
 
-    The Tewke API does not return scene brightness, so the last commanded
-    brightness is held in ``_brightness`` for optimistic rendering.
+    Brightness is read from the scene state reported by the Tap (via observe
+    or initial discovery) so that remote activations and device-defined
+    defaults are always reflected correctly.
     """
 
     _attr_color_mode = ColorMode.BRIGHTNESS
@@ -80,18 +82,22 @@ class TewkeSceneLight(TewkeEntity, LightEntity):
         self._attr_name = scene.name
         entry = coordinator.config_entry
         self._attr_unique_id = f"{entry.unique_id or entry.entry_id}_{scene.id}"
-        self._brightness: int = 255
+
+    @property
+    def _scene(self) -> Scene | None:
+        return self.coordinator.data["scenes"].get(self._scene_id)
 
     @property
     def is_on(self) -> bool | None:
         """Return True when the scene is active."""
-        scene = self.coordinator.data["scenes"].get(self._scene_id)
+        scene = self._scene
         return scene.is_active if scene is not None else None
 
     @property
-    def brightness(self) -> int:
-        """Return the last commanded brightness (0-255)."""
-        return self._brightness
+    def brightness(self) -> int | None:
+        """Return the current brightness (0-255) as reported by the Tap."""
+        scene = self._scene
+        return _tewke_to_ha_brightness(scene.brightness) if scene is not None else None
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Activate the scene, optionally at a specific brightness."""
@@ -108,8 +114,6 @@ class TewkeSceneLight(TewkeEntity, LightEntity):
         except TewkeError:
             LOGGER.error("Error activating Tewke scene %s", self._scene_id)
             return
-        if ATTR_BRIGHTNESS in kwargs:
-            self._brightness = kwargs[ATTR_BRIGHTNESS]
         if tap.wall_dock and self._scene_id in tap.wall_dock.scenes:
             self.coordinator.async_set_updated_data(
                 {
