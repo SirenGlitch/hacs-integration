@@ -1,54 +1,32 @@
 """DataUpdateCoordinator for the Tewke integration."""
+
 from __future__ import annotations
 
-import logging
-from datetime import timedelta
-from typing import Any
+from typing import TYPE_CHECKING
 
-from pytewke import CannotConnect, TewkeClient
+from pytewke.data import Scene
+from pytewke.error import TewkeError
 
-from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
+if TYPE_CHECKING:
+    from .data import TewkeConfigEntry
 
-_LOGGER = logging.getLogger(__name__)
 
+class TewkeCoordinator(DataUpdateCoordinator[dict[str, Scene]]):
+    """Coordinator to manage fetching scene state from a Tewke Tap.
 
-class TewkeCoordinator(DataUpdateCoordinator[dict[str, Any]]):
-    """Coordinator to manage fetching data from a Tewke hub.
-
-    A single coordinator instance is created per config entry. All platforms
-    (light, sensor, …) share the same coordinator so that the hub is polled
-    exactly once per interval and every entity is updated simultaneously.
+    A single coordinator instance is created per config entry. All switch
+    entities share it so the Tap is polled exactly once per interval.
     """
 
-    def __init__(self, hass: HomeAssistant, client: TewkeClient) -> None:
-        """Initialize the coordinator."""
-        self.client = client
-        super().__init__(
-            hass,
-            _LOGGER,
-            name=DOMAIN,
-            update_interval=timedelta(seconds=DEFAULT_SCAN_INTERVAL),
-        )
+    config_entry: TewkeConfigEntry
 
-    async def _async_update_data(self) -> dict[str, Any]:
-        """Fetch the latest state from the Tewke hub.
-
-        Returns a mapping of ``device_id -> device_state_dict``.
-        Raises ``UpdateFailed`` on communication errors so that HA can mark
-        entities as unavailable and retry on the next poll.
-        """
+    async def _async_update_data(self) -> dict[str, Scene]:
+        """Fetch the latest scene states from the Tap."""
         try:
-            devices = await self.client.async_get_devices()
-            data: dict[str, Any] = {}
-            for device in devices:
-                state = await self.client.async_get_device_state(device.device_id)
-                data[device.device_id] = {
-                    "device": device,
-                    "state": state,
-                }
-            return data
-        except CannotConnect as err:
-            raise UpdateFailed(f"Error communicating with Tewke hub: {err}") from err
+            return await self.config_entry.runtime_data.tap.get_scenes()
+        except TewkeError as err:
+            raise UpdateFailed(f"Error communicating with Tewke Tap: {err}") from err
+
+
