@@ -1,0 +1,48 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Tewke Hub",
+        "data": {
+          "host": "IP address or hostname",
+          "api_key": "API key (optional)"
+        },
+        "data_description": {
+          "host": "The IP address or hostname of your Tewke hub on the local network.",
+          "api_key": "An API key if your Tewke hub requires authentication."
+        }
+      },
+      "zeroconf_confirm": {
+        "title": "Discovered Tewke device: {name}",
+        "description": "Do you want to add the Tewke device **{name}** to Home Assistant?",
+        "data": {
+          "api_key": "API key (optional)"
+        },
+        "data_description": {
+          "api_key": "An API key if your Tewke hub requires authentication."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the Tewke hub. Check the IP address and that the device is powered on.",
+      "invalid_auth": "Invalid API key. Please verify your credentials.",
+      "unknown": "An unexpected error occurred. Check the Home Assistant logs for more information."
+    },
+    "abort": {
+      "already_configured": "This Tewke device is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "co2": {
+        "name": "CO\u2082"
+      },
+      "humidity": {
+        "name": "Humidity"
+      },
+      "temperature": {
+        "name": "Temperature"
+      }
+    }
+  }
+}
