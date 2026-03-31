@@ -10,17 +10,21 @@
       "coap_still_failed": "CoAP communication still failed. Please verify that the CoAP server is properly enabled on your device and that there are no network connectivity issues."
     },
     "step": {
-      "coap_enable": {
-        "description": "Unable to communicate with the Tewke device **{name}** at {host} via CoAP. Please ensure the CoAP server is enabled on your device and try again.\n\nTo enable CoAP, open the Tewke app on your device and enable the Local API setting.",
-        "title": "Enable CoAP server"
+      "zeroconf_confirm": {
+        "description": "You are setting up the Tewke device **{name}**{room_suffix}. Click Submit to continue.",
+        "title": "Tewke device found"
       },
       "confirm_control_types": {
-        "description": "Setting up Tewke device **{name}** at {host}. Choose the Home Assistant platform type for each scene: {scenes}.",
-        "title": "Configure scene control types"
+        "description": "Choose the Home Assistant platform type for each scene.\n\n**Light** (default) — the scene appears as a dimmable light entity.\n**Switch** — use this if you want to remove brightness control entirely.\n**Fan** — use this if you want brightness or speed control, but do not want the scene to appear as a light entity.",
+        "title": "Configure scene types"
       },
       "placeholder": {
         "description": "Your Tewke device **{name}** is ready to be added to Home Assistant. Click Submit to complete the setup.",
         "title": "Final setup"
+      },
+      "coap_enable": {
+        "description": "Unable to communicate with the Tewke device **{name}** at {host} via CoAP. Please ensure the CoAP server is enabled on your device and try again.\n\nTo enable CoAP, open the Tewke app on your device and enable the Local API setting.",
+        "title": "Enable CoAP server"
       },
       "user": {
         "data": {
