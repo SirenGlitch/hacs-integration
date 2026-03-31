@@ -6,6 +6,6 @@ dependencies = [
     "colorlog==6.10.1",
     "homeassistant==2026.3.2",
     "ruff>=0.15.7",
-    "pytewke@git+ssh://git@gitlab.com/tewke/open-source/pytewke.git@819c027ad64fcfa5fb3c3876871beec2254e4598",
+    "pytewke@git+ssh://git@gitlab.com/tewke/open-source/pytewke.git@dc4a9f810f8abfe9d69ef4d5159a73604235b15c",
     "voluptuous>=0.15.2",
 ]

@@ -904,7 +904,7 @@ dependencies = [
 requires-dist = [
     { name = "colorlog", specifier = "==6.10.1" },
     { name = "homeassistant", specifier = "==2026.3.2" },
-    { name = "pytewke", git = "ssh://git@gitlab.com/tewke/open-source/pytewke.git?rev=819c027ad64fcfa5fb3c3876871beec2254e4598" },
+    { name = "pytewke", git = "ssh://git@gitlab.com/tewke/open-source/pytewke.git?rev=dc4a9f810f8abfe9d69ef4d5159a73604235b15c" },
     { name = "ruff", specifier = ">=0.15.7" },
     { name = "voluptuous", specifier = ">=0.15.2" },
 ]
@@ -1574,7 +1574,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/08/64/a99f27d3b4347486c
 [[package]]
 name = "pytewke"
 version = "0.2.0"
-source = { git = "ssh://git@gitlab.com/tewke/open-source/pytewke.git?rev=819c027ad64fcfa5fb3c3876871beec2254e4598#819c027ad64fcfa5fb3c3876871beec2254e4598" }
+source = { git = "ssh://git@gitlab.com/tewke/open-source/pytewke.git?rev=dc4a9f810f8abfe9d69ef4d5159a73604235b15c#dc4a9f810f8abfe9d69ef4d5159a73604235b15c" }
 dependencies = [
     { name = "aiocoap" },
     { name = "cbor2" },
