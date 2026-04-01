@@ -16,7 +16,7 @@ from .data import TewkeConfigEntry, TewkeData
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
-    from pytewke.data import EnergyData, RadarData, Scene, SensorData, Target
+    from pytewke.data import ConfigData, EnergyData, RadarData, Scene, SensorData, Target
 
 PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
@@ -90,12 +90,18 @@ async def async_setup_entry(
             return
         coordinator.async_set_updated_data({**coordinator.data, "energy": energy_data})
 
+    def _on_config_update(config_data: ConfigData) -> None:
+        if coordinator.data is None:
+            return
+        coordinator.async_set_updated_data({**coordinator.data, "config": config_data})
+
     await tap.observe(
         scene_callback=_on_scene_update,
         target_callback=_on_target_update,
         sensor_callback=_on_sensor_update,
         radar_callback=_on_radar_update,
         energy_callback=_on_energy_update,
+        config_change_callback=_on_config_update,
     )
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

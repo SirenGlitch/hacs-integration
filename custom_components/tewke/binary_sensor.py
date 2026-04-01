@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from homeassistant.components.binary_sensor import (
+    BinarySensorDeviceClass,
     BinarySensorEntity,
     BinarySensorEntityDescription,
 )
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
 
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
-    from pytewke.data import SensorData
+    from pytewke.data import ConfigData, SensorData
 
     from .coordinator import TewkeCoordinator
     from .data import TewkeConfigEntry
@@ -58,13 +59,16 @@ async def async_setup_entry(
 ) -> None:
     """Set up Tewke binary sensor entities from a config entry."""
     coordinator = entry.runtime_data.coordinator
-    entities: list[TewkeBinarySensor] = []
+    entities: list[TewkeBinarySensor | TewkeScreenBinarySensor] = []
 
     if coordinator.data.get("sensors") is not None:
         entities.extend(
             TewkeBinarySensor(coordinator=coordinator, description=description)
             for description in BINARY_SENSOR_DESCRIPTIONS
         )
+
+    if coordinator.data.get("config") is not None:
+        entities.append(TewkeScreenBinarySensor(coordinator=coordinator))
 
     async_add_entities(entities)
 
@@ -94,3 +98,24 @@ class TewkeBinarySensor(TewkeEntity, BinarySensorEntity):
         if sensors is None:
             return None
         return self.entity_description.value_fn(sensors)
+
+
+class TewkeScreenBinarySensor(TewkeEntity, BinarySensorEntity):
+    """Binary sensor representing whether the Tewke panel screen is on."""
+
+    _attr_device_class = BinarySensorDeviceClass.RUNNING
+    _attr_name = "Screen"
+
+    def __init__(self, coordinator: TewkeCoordinator) -> None:
+        """Initialise the screen sensor."""
+        super().__init__(coordinator)
+        entry = coordinator.config_entry
+        self._attr_unique_id = f"{entry.unique_id or entry.entry_id}_screen_on"
+
+    @property
+    def is_on(self) -> bool | None:
+        """Return True when the panel screen is on."""
+        config: ConfigData | None = self.coordinator.data.get("config")
+        if config is None:
+            return None
+        return config.screen_on

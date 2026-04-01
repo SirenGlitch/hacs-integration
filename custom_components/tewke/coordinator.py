@@ -10,7 +10,7 @@ from pytewke.error import TewkeError
 from .const import LOGGER
 
 if TYPE_CHECKING:
-    from pytewke.data import EnergyData, RadarData, SensorData
+    from pytewke.data import ConfigData, EnergyData, RadarData, SensorData
 
     from .data import TewkeConfigEntry
 
@@ -63,10 +63,17 @@ class TewkeCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             LOGGER.debug("Energy data not available from Tewke Tap")
             energy = None
 
+        try:
+            config: ConfigData | None = await tap.get_config()
+        except TewkeError:
+            LOGGER.debug("Config data not available from Tewke Tap")
+            config = None
+
         return {
             "scenes": scenes,
             "targets": targets,
             "sensors": sensors,
             "radar": radar,
             "energy": energy,
+            "config": config,
         }
