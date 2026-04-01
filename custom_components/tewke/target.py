@@ -49,7 +49,7 @@ class TewkeTargetLight(TewkeEntity, LightEntity):
         """Initialise the target light."""
         super().__init__(coordinator)
         self._target_index = target.index
-        self._attr_name = f"Output {target.index}"
+        self._attr_name = target.name
         entry = coordinator.config_entry
         self._attr_unique_id = (
             f"{entry.unique_id or entry.entry_id}_target_{target.index}"
