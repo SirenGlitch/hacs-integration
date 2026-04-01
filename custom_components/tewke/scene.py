@@ -35,9 +35,9 @@ def _tewke_to_ha_brightness(value: int) -> int:
     return round(value / 100 * 255)
 
 
-def _ha_to_tewke_brightness(value: int) -> int:
+def _ha_to_tewke_brightness(value: int | None) -> int | None:
     """Convert a HA brightness (0-255) to a Tewke brightness (0-100)."""
-    return round(value / 255 * 100)
+    return round(value / 255 * 100) if value is not None else None
 
 
 class TewkeSceneEntity(TewkeEntity):
@@ -118,9 +118,7 @@ class TewkeSceneLight(TewkeSceneEntity, LightEntity):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Activate the scene, optionally at a specific brightness."""
-        ha_brightness = kwargs.get(
-            ATTR_BRIGHTNESS, self._brightness if self._brightness is not None else 255
-        )
+        ha_brightness = kwargs.get(ATTR_BRIGHTNESS)
         tewke_brightness = _ha_to_tewke_brightness(ha_brightness)
         try:
             await self.coordinator.config_entry.runtime_data.tap.set_scene(
