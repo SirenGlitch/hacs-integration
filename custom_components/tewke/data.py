@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     import pytewke
     from homeassistant.config_entries import ConfigEntry
 
-    from .coordinator import TewkeCoordinator, TewkeSensorCoordinator
+    from .coordinator import TewkeCoordinator
 
 type TewkeConfigEntry = ConfigEntry[TewkeData]
 
@@ -20,5 +20,4 @@ class TewkeData:
 
     tap: pytewke.Tap
     coordinator: TewkeCoordinator
-    sensor_coordinator: TewkeSensorCoordinator
     scene_control_types: dict[str, str]

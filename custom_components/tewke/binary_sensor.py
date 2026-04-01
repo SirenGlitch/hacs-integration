@@ -1,7 +1,7 @@
 """Binary sensor platform for the Tewke integration.
 
-Exposes the boolean BME680 calibration status fields as binary sensor entities.
-Both are disabled by default as they are diagnostic values.
+Exposes boolean BME680 calibration status fields, delivered via CoAP
+observation (local_push). Both are disabled by default as diagnostic values.
 """
 
 from __future__ import annotations
@@ -16,17 +16,14 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
     BinarySensorEntityDescription,
 )
-from homeassistant.const import CONF_NAME
-from homeassistant.helpers.device_registry import DeviceInfo
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
+from .entity import TewkeEntity
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-    from .coordinator import TewkeSensorCoordinator
+    from .coordinator import TewkeCoordinator
     from .data import TewkeConfigEntry
 
 
@@ -59,42 +56,38 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Tewke binary sensor entities from a config entry."""
-    coordinator = entry.runtime_data.sensor_coordinator
-    if coordinator.data is None:
+    coordinator = entry.runtime_data.coordinator
+    if coordinator.data.get("sensors") is None:
         return
 
     async_add_entities(
-        TewkeBinarySensor(coordinator=coordinator, description=description, entry=entry)
+        TewkeBinarySensor(coordinator=coordinator, description=description)
         for description in BINARY_SENSOR_DESCRIPTIONS
     )
 
 
-class TewkeBinarySensor(CoordinatorEntity["TewkeSensorCoordinator"], BinarySensorEntity):
+class TewkeBinarySensor(TewkeEntity, BinarySensorEntity):
     """A Tewke BME680 calibration status binary sensor."""
 
-    _attr_has_entity_name = True
     entity_description: TewkeBinarySensorEntityDescription
 
     def __init__(
         self,
-        coordinator: TewkeSensorCoordinator,
+        coordinator: TewkeCoordinator,
         description: TewkeBinarySensorEntityDescription,
-        entry: TewkeConfigEntry,
     ) -> None:
         """Initialise the binary sensor."""
         super().__init__(coordinator)
         self.entity_description = description
+        entry = coordinator.config_entry
         self._attr_unique_id = (
             f"{entry.unique_id or entry.entry_id}_sensor_{description.key}"
-        )
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.unique_id or entry.entry_id)},
-            name=entry.data.get(CONF_NAME, "Tewke"),
         )
 
     @property
     def is_on(self) -> bool | None:
         """Return the sensor state."""
-        if self.coordinator.data is None:
+        sensors: SensorData | None = self.coordinator.data.get("sensors")
+        if sensors is None:
             return None
-        return self.entity_description.value_fn(self.coordinator.data)
+        return self.entity_description.value_fn(sensors)
