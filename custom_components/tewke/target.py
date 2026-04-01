@@ -43,10 +43,14 @@ class TewkeTargetLight(TewkeEntity, LightEntity):
     control. Most users should use scenes instead.
     """
 
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Disable target entities by default."""
+        return False
+
     def __init__(self, coordinator: TewkeCoordinator, target: Target) -> None:
         """Initialise the target light."""
         super().__init__(coordinator)
-        self._attr_entity_registry_enabled_default = False
         self._target_index = target.index
         self._attr_name = target.name
         entry = coordinator.config_entry
