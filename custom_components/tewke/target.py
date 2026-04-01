@@ -95,8 +95,6 @@ class TewkeTargetLight(TewkeEntity, LightEntity):
             )
         except TewkeError:
             LOGGER.error("Error turning on Tewke target %s", self._target_index)
-            return
-        await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn off the output."""
@@ -106,5 +104,3 @@ class TewkeTargetLight(TewkeEntity, LightEntity):
             )
         except TewkeError:
             LOGGER.error("Error turning off Tewke target %s", self._target_index)
-            return
-        await self.coordinator.async_request_refresh()

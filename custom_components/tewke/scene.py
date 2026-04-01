@@ -65,7 +65,6 @@ class TewkeSceneSwitch(TewkeEntity, SwitchEntity):
             )
         except TewkeError:
             LOGGER.error("Error activating Tewke scene %s", self._scene_id)
-        await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Deactivate the scene."""
@@ -75,7 +74,6 @@ class TewkeSceneSwitch(TewkeEntity, SwitchEntity):
             )
         except TewkeError:
             LOGGER.error("Error deactivating Tewke scene %s", self._scene_id)
-        await self.coordinator.async_request_refresh()
 
 
 class TewkeSceneLight(TewkeEntity, LightEntity):
@@ -112,15 +110,15 @@ class TewkeSceneLight(TewkeEntity, LightEntity):
         """Activate the scene, optionally at a specific brightness."""
         ha_brightness = kwargs.get(ATTR_BRIGHTNESS, self._brightness)
         tewke_brightness = _ha_to_tewke_brightness(ha_brightness)
+        previous_brightness = self._brightness
+        self._brightness = ha_brightness
         try:
             await self.coordinator.config_entry.runtime_data.tap.set_scene(
                 scene_id=self._scene_id, state=True, brightness=tewke_brightness
             )
         except TewkeError:
+            self._brightness = previous_brightness
             LOGGER.error("Error activating Tewke scene %s", self._scene_id)
-            return
-        self._brightness = ha_brightness
-        await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Deactivate the scene."""
@@ -130,8 +128,6 @@ class TewkeSceneLight(TewkeEntity, LightEntity):
             )
         except TewkeError:
             LOGGER.error("Error deactivating Tewke scene %s", self._scene_id)
-            return
-        await self.coordinator.async_request_refresh()
 
 
 class TewkeSceneFan(TewkeEntity, FanEntity):
@@ -173,15 +169,15 @@ class TewkeSceneFan(TewkeEntity, FanEntity):
         if percentage == 0:
             await self.async_turn_off()
             return
+        previous_percentage = self._percentage
+        self._percentage = percentage
         try:
             await self.coordinator.config_entry.runtime_data.tap.set_scene(
                 scene_id=self._scene_id, state=True, brightness=percentage
             )
         except TewkeError:
+            self._percentage = previous_percentage
             LOGGER.error("Error setting speed for Tewke fan scene %s", self._scene_id)
-            return
-        self._percentage = percentage
-        await self.coordinator.async_request_refresh()
 
     async def async_turn_on(
         self,
@@ -202,5 +198,3 @@ class TewkeSceneFan(TewkeEntity, FanEntity):
             )
         except TewkeError:
             LOGGER.error("Error turning off Tewke fan scene %s", self._scene_id)
-            return
-        await self.coordinator.async_request_refresh()
