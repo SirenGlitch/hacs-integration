@@ -4,8 +4,49 @@ version = "0.1.0"
 requires-python = ">=3.14.2"
 dependencies = [
     "colorlog==6.10.1",
-    "homeassistant==2026.3.2",
+    "homeassistant==2026.3.3",
     "ruff>=0.15.7",
-    "pytewke@git+ssh://git@gitlab.com/tewke/open-source/pytewke.git@6249237f9cb0f174ebad4ec6e4b713af99074529",
+    "pytewke@git+ssh://git@gitlab.com/tewke/open-source/pytewke.git@f365bdee45512ad11da09e309cc991114a2dd83d",
     "voluptuous>=0.15.2",
 ]
+
+[dependency-groups]
+dev = [
+    "black>=26.3.1",
+    "ruff>=0.15.8",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.ruff.lint]
+select = [
+    "A", # detect shadowed builtins
+    "BLE", # disallow catch-all exceptions
+    "C4", # Catch incorrect use of comprehensions, dict, list, etc
+    "COM", # enforce trailing comma rules
+    "DTZ", # require strict timezone manipulation with datetime
+    "E", # PyCodeStyle errors
+    "FA", # Enforce from __future__ import annotations
+    "FBT", # detect boolean traps
+    "F", # Pyflakes rules
+    "ICN", # Use common import conventions
+    "ISC", # Good use of string concatenation
+    "I", # Sort imports properly
+    "N", # enforce naming conventions, e.g. ClassName vs function_name
+    "NPY", # Some numpy-specific things
+    "PTH", # Use pathlib instead of os.path
+    "RET", # Good return practices
+    "S", # disallow things like "exec"; also restricts "assert" but I just NOQA it when I really need it
+    "SIM", # Common simplification rules
+    "TC", # Enforce importing certain types in a TYPE_CHECKING block
+    #    "TD",       # Be diligent with TODO comments
+    "TID", # Some good import practices
+    "UP", # Warn if certain things can changed due to newer Python versions
+    "W", # PyCodeStyle warnings
+]
+ignore = [
+    "COM812", # Conflicts with ruff format
+]
+

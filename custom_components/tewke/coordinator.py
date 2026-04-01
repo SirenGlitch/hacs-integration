@@ -42,5 +42,3 @@ class TewkeCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             return {"scenes": scenes, "targets": targets}
         except TewkeError as err:
             raise UpdateFailed(f"Error communicating with Tewke Tap: {err}") from err
-
-

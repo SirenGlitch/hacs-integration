@@ -44,9 +44,7 @@ class TewkeConfigFlow(ConfigFlow, domain=DOMAIN):
             return self.async_abort(reason="cannot_identify")
 
         await self.async_set_unique_id(unique_id)
-        self._abort_if_unique_id_configured(
-            updates={CONF_HOST: discovery_info.host}
-        )
+        self._abort_if_unique_id_configured(updates={CONF_HOST: discovery_info.host})
 
         self._discovered_host = discovery_info.host
         self._discovered_name = discovery_info.properties.get(
@@ -136,4 +134,3 @@ class TewkeConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="placeholder",
             description_placeholders={"name": self._discovered_name},
         )
-

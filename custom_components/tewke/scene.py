@@ -143,7 +143,9 @@ class TewkeSceneFan(TewkeEntity, FanEntity):
     """
 
     _attr_supported_features = (
-        FanEntityFeature.SET_SPEED | FanEntityFeature.TURN_ON | FanEntityFeature.TURN_OFF
+        FanEntityFeature.SET_SPEED
+        | FanEntityFeature.TURN_ON
+        | FanEntityFeature.TURN_OFF
     )
 
     def __init__(self, coordinator: TewkeCoordinator, scene: Scene) -> None:
