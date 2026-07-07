@@ -5,23 +5,21 @@
 [![Validate hassfest](https://github.com/tewke/ha-custom-integration/actions/workflows/hassfest.yml/badge.svg)](https://github.com/tewke/ha-custom-integration/actions/workflows/hassfest.yml)
 
 - [Tewke Home Assistant Integration](#tewke-home-assistant-integration)
-    - [Features](#features)
-    - [Prerequisites](#prerequisites)
-    - [How to install](#how-to-install)
-        - [HACS](#hacs)
-        - [Manual](#manual)
-    - [Issues](#issues)
+  - [Features](#features)
+  - [Prerequisites](#prerequisites)
+  - [How to install](#how-to-install)
+    - [HACS](#hacs-recommended)
+    - [Manual](#manual)
+  - [Issues](#issues)
 
 A Home Assistant integration for Tewke devices.
-
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=tewke&repository=ha-custom-integration&category=integration)
 
 ## Features
 
 - [x] Scene control[^1]
-    - [x] As lights
-    - [x] As fans[^2]
-    - [x] As switches
+  - [x] As lights
+  - [x] As fans[^2]
+  - [x] As switches
 - [x] Target control (default disabled)
 - [x] Sensor data
 - [x] Repair flow for new Scenes
@@ -40,7 +38,7 @@ that controls something other than lights from the rest of the Scenes.
 Before you can use this integration, you need to enable the CoAP server on
 your Tewke Tap Panel. The controls for this will be available in the Tewke
 mobile app when the feature is ready for general availability. To enable CoAP
-now, please reach out to Tewke at contact@tewke.com for instructions.
+now, please reach out to Tewke at <contact@tewke.com> for instructions.
 
 You will also need to have [HACS](https://www.hacs.xyz/) installed on your
 instance of Home Assistant.
@@ -49,9 +47,10 @@ instance of Home Assistant.
 
 There are multiple ways of installing the integration.
 
-### HACS
+### HACS (Recommended)
 
-Click the button at the top of this readme to add this repository to HACS and install it.
+Simply search HACS for "Tewke", press Download,
+then restart Home Assistant in order for it to pick up the integration.
 
 ### Manual
 
