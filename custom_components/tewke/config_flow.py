@@ -161,7 +161,11 @@ class TewkeConfigFlow(ConfigFlow, domain=DOMAIN):
                 if not config["Enabled"]:
                     self._disabled_scenes.append(name_to_id[name])
 
-            if "fan" in self._scene_control_types.values():
+            if "fan" in self._scene_control_types.values() and [
+                sceneid
+                for sceneid, scene_type in self._scene_control_types.items()
+                if scene_type == "fan" and sceneid not in self._disabled_scenes
+            ]:
                 return await self.async_step_fan_default_speeds()
 
             self._default_scene_fan_dimming = {}
@@ -204,7 +208,9 @@ class TewkeConfigFlow(ConfigFlow, domain=DOMAIN):
         fan_scenes = {
             scene_id: self._scenes[scene_id]
             for scene_id, ct in self._scene_control_types.items()
-            if ct == "fan" and scene_id in self._scenes
+            if ct == "fan"
+            and scene_id in self._scenes
+            and scene_id not in self._disabled_scenes
         }
 
         if user_input is not None:
@@ -282,6 +288,7 @@ class TewkeOptionsFlow(OptionsFlow):
         """Manage fan default speed options."""
         entry = self.config_entry
         scene_control_types: dict[str, str] = entry.data.get("scene_control_types", {})
+        disabled_scenes = entry.data.get(CONF_DISABLED_SCENES, [])
 
         coordinator: TewkeCoordinator | None = getattr(
             getattr(entry, "runtime_data", None), "coordinator", None
@@ -294,6 +301,7 @@ class TewkeOptionsFlow(OptionsFlow):
             scene_id: scene
             for scene_id, scene in scenes.items()
             if scene_control_types.get(scene_id) == "fan"
+            and scene_id not in disabled_scenes
         }
 
         if not fan_scenes:
