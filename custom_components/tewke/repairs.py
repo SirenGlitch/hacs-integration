@@ -90,6 +90,7 @@ class TewkeNewSceneRepairFlow(RepairsFlow):
                 self._pending_list[i]
                 for i in range(len(self._pending_list))
                 if user_input.get(f"scene_section_{i}", {}).get("scene_text") == "fan"
+                and user_input.get(f"scene_section_{i}", {}).get("enabled_text") is True
             ]
             if len(self._new_fan_scenes) > 0:
                 self._pending_scene_config = user_input
