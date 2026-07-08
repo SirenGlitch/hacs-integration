@@ -16,9 +16,9 @@ A Home Assistant integration for Tewke devices.
 
 ## Features
 
-- [x] Scene control[<sup>1</sup>](#sup1sup)
+- [x] Scene control[<sup>1</sup>](#1)
   - [x] As lights
-  - [x] As fans[<sup>2</sup>](#sup2sup)
+  - [x] As fans[<sup>2</sup>](#2)
   - [x] As switches
 - [x] Target control (default disabled)
 - [x] Sensor data
