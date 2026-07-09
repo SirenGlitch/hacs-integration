@@ -169,8 +169,10 @@ class TewkeCoordinator(DataUpdateCoordinator[TewkeCoordinatorData]):
             return
 
         _observe_delays: list[int] = [30, 60, 90]
+        max_fails = len(_observe_delays)
 
         async def _retry() -> None:
+            failed = 0
             for attempt, delay in enumerate(_observe_delays):
                 try:
                     if attempt == 0:
@@ -188,8 +190,22 @@ class TewkeCoordinator(DataUpdateCoordinator[TewkeCoordinatorData]):
                         attempt + 1,
                         len(_observe_delays),
                     )
+                    failed += 1
                     if attempt < len(_observe_delays) - 1:
                         await asyncio.sleep(delay)
+
+            # Tell HomeAssistant that the device is offline
+            if (
+                failed >= max_fails
+            ):  # if it's ever higher than 3, reality has broken, handle regardless
+                self.logger.error(
+                    "Failed to re-initialise observations with tap %s %d times,"
+                    " labelling as unavailable",
+                    self.config_entry.runtime_data.tap.wall_dock_id,
+                    failed,
+                )
+                raise UpdateFailed
+
             if self._observe_retry_task is asyncio.current_task():
                 self._observe_retry_task = None
 
