@@ -16,23 +16,19 @@ A Home Assistant integration for Tewke devices.
 
 ## Features
 
-- [x] Scene control[<sup>1</sup>](#1)
+- [x] Scene control[^1]
   - [x] As lights
-  - [x] As fans[<sup>2</sup>](#2)
+  - [x] As fans[^2]
   - [x] As switches
 - [x] Target control (default disabled)
 - [x] Sensor data
 - [x] Repair flow for new Scenes
 - [x] Reconfigure flow
 
-#### <sup>1</sup>
-
-This only affects how the Scenes appear in Home Assistant. The Wall
+[^1]: This only affects how the Scenes appear in Home Assistant. The Wall
 Dock only supports resistive or near-resistive loads.
 
-#### <sup>2</sup>
-
-**The Tewke Tap Wall Dock does not support inductive loads. Connecting
+[^2]: **The Tewke Tap Wall Dock does not support inductive loads. Connecting
 a fan or other inductive device will result in permanent damage to your
 hardware.** This is strictly a convenience feature for separating a Scene
 that controls something other than lights from the rest of the Scenes.
