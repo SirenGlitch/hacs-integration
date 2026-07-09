@@ -175,6 +175,7 @@ class TewkeCoordinator(DataUpdateCoordinator[TewkeCoordinatorData]):
                 try:
                     if attempt == 0:
                         await self.config_entry.runtime_data.tap.retry_observes()
+                        self.config_entry.runtime_data.observe_active = True
                     else:
                         await self._setup_observe()
                     break
