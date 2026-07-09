@@ -173,7 +173,10 @@ class TewkeCoordinator(DataUpdateCoordinator[TewkeCoordinatorData]):
         async def _retry() -> None:
             for attempt, delay in enumerate(_observe_delays):
                 try:
-                    await self.config_entry.runtime_data.tap.retry_observes()
+                    if attempt == 0:
+                        await self.config_entry.runtime_data.tap.retry_observes()
+                    else:
+                        await self._setup_observe()
                     break
                 except Exception:
                     self.logger.exception(
