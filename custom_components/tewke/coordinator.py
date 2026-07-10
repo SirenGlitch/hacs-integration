@@ -195,9 +195,8 @@ class TewkeCoordinator(DataUpdateCoordinator[TewkeCoordinatorData]):
                         await asyncio.sleep(delay)
 
             # Tell HomeAssistant that the device is offline
-            if (
-                failed >= max_fails
-            ):  # if it's ever higher than 3, reality has broken, handle regardless
+            # If failed is ever higher than 3, reality has broken, handle regardless
+            if failed >= max_fails:
                 self.logger.error(
                     "Failed to re-initialise observations with tap %s %d times,"
                     " labelling as unavailable",
