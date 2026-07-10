@@ -204,7 +204,13 @@ class TewkeCoordinator(DataUpdateCoordinator[TewkeCoordinatorData]):
                     self.config_entry.runtime_data.tap.wall_dock_id,
                     failed,
                 )
-                raise UpdateFailed
+                self.async_set_update_error(
+                    UpdateFailed(
+                        f"Failed to re-initialise observations with tap "
+                        f"{self.config_entry.runtime_data.tap.wall_dock_id} "
+                        f"after {failed} attempts"
+                    )
+                )
 
             if self._observe_retry_task is asyncio.current_task():
                 self._observe_retry_task = None
