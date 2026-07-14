@@ -172,34 +172,28 @@ class TewkeCoordinator(DataUpdateCoordinator[TewkeCoordinatorData]):
         _observe_delays: list[int] = [30, 60, 90]
         max_fails = len(_observe_delays)
 
+        async def _do_retry_attempt(attempt_num: int) -> bool:
+            if attempt_num != 0:
+                return await self._setup_observe()
+
+            if not await self.config_entry.runtime_data.tap.retry_observes():
+                return False
+
+            self.config_entry.runtime_data.observe_active = True
+            self.reset_observation_timeout()
+            return True
+
         async def _retry() -> None:
             failed = 0
 
-            async def _do_attempt(attempt_num: int) -> None:
-                if attempt_num == 0:
-                    await self.config_entry.runtime_data.tap.retry_observes()
-                    self.config_entry.runtime_data.observe_active = True
-                    self.reset_observation_timeout()
-                elif not await self._setup_observe():
-                    msg = "Failed to re-establish observations"
-                    raise PyTewkeObserveError(msg)
-
             for attempt, delay in enumerate(_observe_delays):
-                try:
-                    await _do_attempt(attempt)
+                if await _do_retry_attempt(attempt):
                     break
-                except Exception:
-                    self.logger.exception(
-                        "Failed to retry CoAP observations for tap %s,"
-                        " retrying in %.0fs (attempt %d/%d)",
-                        self.config_entry.runtime_data.tap.wall_dock_id,
-                        delay,
-                        attempt + 1,
-                        len(_observe_delays),
-                    )
-                    failed += 1
-                    if attempt < len(_observe_delays) - 1:
-                        await asyncio.sleep(delay)
+
+                self.logger.warning("Failed to retry observe")
+                failed += 1
+                if attempt < len(_observe_delays) - 1:
+                    await asyncio.sleep(delay)
 
             # Tell HomeAssistant that the device is offline
             # If failed is ever higher than 3, reality has broken, handle regardless
