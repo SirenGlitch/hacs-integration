@@ -12,7 +12,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from pytewke.error import (
     PyTewkeCoapError,
     PyTewkeInvalidResponseError,
-    PyTewkeObserveError,
     PyTewkeUnknownError,
 )
 
