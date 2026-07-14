@@ -12,6 +12,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from pytewke.error import (
     PyTewkeCoapError,
     PyTewkeInvalidResponseError,
+    PyTewkeObserveError,
     PyTewkeUnknownError,
 )
 
@@ -173,13 +174,19 @@ class TewkeCoordinator(DataUpdateCoordinator[TewkeCoordinatorData]):
 
         async def _retry() -> None:
             failed = 0
+
+            async def _do_attempt(attempt_num: int) -> None:
+                if attempt_num == 0:
+                    await self.config_entry.runtime_data.tap.retry_observes()
+                    self.config_entry.runtime_data.observe_active = True
+                    self.reset_observation_timeout()
+                elif not await self._setup_observe():
+                    msg = "Failed to re-establish observations"
+                    raise PyTewkeObserveError(msg)
+
             for attempt, delay in enumerate(_observe_delays):
                 try:
-                    if attempt == 0:
-                        await self.config_entry.runtime_data.tap.retry_observes()
-                        self.config_entry.runtime_data.observe_active = True
-                    else:
-                        await self._setup_observe()
+                    await _do_attempt(attempt)
                     break
                 except Exception:
                     self.logger.exception(
@@ -216,15 +223,15 @@ class TewkeCoordinator(DataUpdateCoordinator[TewkeCoordinatorData]):
 
         self._observe_retry_task = self.hass.async_create_task(_retry())
 
-    async def _setup_observe(self) -> None:
+    async def _setup_observe(self) -> bool:
         async with self._observe_setup_lock:
             if self.config_entry.runtime_data.observe_active:
-                return
+                return True
             LOGGER.info(
                 "CoAP observations not active for %s; attempting to re-establish",
                 self.config_entry.entry_id,
             )
-            await async_setup_observe(self, self.hass, self.config_entry)
+            return await async_setup_observe(self, self.hass, self.config_entry)
 
     async def _async_update_data(self) -> TewkeCoordinatorData:
         """
