@@ -922,7 +922,7 @@ dev = [
 requires-dist = [
     { name = "colorlog", specifier = "==6.10.1" },
     { name = "homeassistant", specifier = "==2026.5.1" },
-    { name = "pytewke", specifier = "==0.5.4" },
+    { name = "pytewke", specifier = "==0.5.6" },
     { name = "voluptuous", specifier = ">=0.15.2" },
 ]
 
@@ -1684,16 +1684,16 @@ sdist = { url = "https://files.pythonhosted.org/packages/08/64/a99f27d3b4347486c
 
 [[package]]
 name = "pytewke"
-version = "0.5.4"
+version = "0.5.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiocoap" },
     { name = "cbor2" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e3/0c/6b86d762cf2059b60154db93b25e5434da8430931b7acdabed699aee4076/pytewke-0.5.4.tar.gz", hash = "sha256:d6f585f69a08e1b8345d43fe4073973ceab0379208e28969b1ad6a67ae11eb41", size = 17102708, upload-time = "2026-07-14T09:50:02.318Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/94/e6/9e999e31c32a01d692dacd54d8be33337205c37eb48cb569e06eb132a09d/pytewke-0.5.6.tar.gz", hash = "sha256:12909981353f551ba4af6bb18e6fc5206e3259fc23fc45c87bd0d6d45e50a166", size = 17102848, upload-time = "2026-07-15T13:44:53.339Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/11/10/cca3a6ec353ce1096a4476f8da23ee4f16a46fc8b0a3e292374f6db5aefb/pytewke-0.5.4-py3-none-any.whl", hash = "sha256:b2485eefd92724f76ced3647c3544d1a5a4f61e313e881b5c90271d04d2782cc", size = 25192, upload-time = "2026-07-14T09:50:00.651Z" },
+    { url = "https://files.pythonhosted.org/packages/11/5d/d800aa11f35d09138f1d10cfce9be4cbdf22b8ba8fb20b436a6472ab5514/pytewke-0.5.6-py3-none-any.whl", hash = "sha256:64f2d0c0525b3ad738815aff4e7d6d6a11f49554d5c3db6c399ae2233e0451b1", size = 25211, upload-time = "2026-07-15T13:44:52.028Z" },
 ]
 
 [[package]]
