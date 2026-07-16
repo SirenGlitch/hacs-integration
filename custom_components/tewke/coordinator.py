@@ -235,12 +235,28 @@ class TewkeCoordinator(DataUpdateCoordinator[TewkeCoordinatorData]):
         The full fetch only runs when we have no data yet (initial startup)
         or when observations are down and we need to fall back to polling.
         """
-        await self._setup_observe()
+        try:
+            await self._setup_observe()
 
-        if self.config_entry.runtime_data.observe_active and self.data is not None:
-            return self.data
+            if self.config_entry.runtime_data.observe_active and self.data is not None:
+                return self.data
 
-        tap = self.config_entry.runtime_data.tap
+            tap = self.config_entry.runtime_data.tap
+
+            expected_dock_id = self.config_entry.unique_id
+
+            if tap.wall_dock_id != expected_dock_id:
+                self.async_set_update_error(
+                    UpdateFailed(
+                        "Device swap detected! Coordinator expected %s "
+                        "but IP is reporting %s. Waiting for Zeroconf update.",
+                        expected_dock_id,
+                        tap.wall_dock_id,
+                    )
+                )
+
+        except Exception as err:
+            raise UpdateFailed from err
 
         try:
             scenes_all = await _fetch_with_retries(tap.get_scenes)
